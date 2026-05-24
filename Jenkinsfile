@@ -51,7 +51,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t sit753-devops-app .'
+                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" build -t sit753-devops-app .'
             }
         }
 
