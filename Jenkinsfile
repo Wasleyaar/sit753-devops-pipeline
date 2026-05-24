@@ -43,6 +43,12 @@ pipeline {
             }
         }
 
+        stage('Security Scan') {
+            steps {
+                bat 'npm audit --audit-level=high'
+            }
+        }
+
         stage('Build Application') {
             steps {
                 bat 'echo Building application...'
