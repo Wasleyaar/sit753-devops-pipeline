@@ -5,6 +5,10 @@ pipeline {
         nodejs 'NodeJS'
     }
 
+    environment {
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
+    }
+
     stages {
 
         stage('Install Dependencies') {
@@ -16,6 +20,19 @@ pipeline {
         stage('Run Tests') {
             steps {
                 bat 'npm test'
+            }
+        }
+
+        stage('Code Quality') {
+            steps {
+                bat '''
+                npx sonar-scanner ^
+                -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
+                -Dsonar.organization=wasleyaar ^
+                -Dsonar.sources=. ^
+                -Dsonar.host.url=https://sonarcloud.io ^
+                -Dsonar.token=%SONAR_TOKEN%
+                '''
             }
         }
 
