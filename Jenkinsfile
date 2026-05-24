@@ -25,14 +25,20 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                bat '''
-                "%SONAR_SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
-                -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
-                -Dsonar.organization=wasleyaar ^
-                -Dsonar.sources=. ^
-                -Dsonar.host.url=https://sonarcloud.io ^
-                -Dsonar.token=%SONAR_TOKEN%
-                '''
+                script {
+
+                    def scannerHome = tool 'SonarScanner'
+
+                    bat """
+                    ${scannerHome}\\bin\\sonar-scanner.bat ^
+                    -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
+                    -Dsonar.organization=wasleyaar ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=https://sonarcloud.io ^
+                    -Dsonar.token=%SONAR_TOKEN%
+                    """
+
+                }
             }
         }
 
