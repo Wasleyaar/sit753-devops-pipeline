@@ -25,14 +25,7 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                bat '''
-                npx sonar-scanner ^
-                -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
-                -Dsonar.organization=wasleyaar ^
-                -Dsonar.sources=. ^
-                -Dsonar.host.url=https://sonarcloud.io ^
-                -Dsonar.token=%SONAR_TOKEN%
-                '''
+                bat 'npx sonar-scanner -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline -Dsonar.organization=wasleyaar -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=%SONAR_TOKEN%'
             }
         }
 
@@ -45,6 +38,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo 'Pipeline executed successfully!'
         }
@@ -52,5 +46,6 @@ pipeline {
         failure {
             echo 'Pipeline failed!'
         }
+
     }
 }
