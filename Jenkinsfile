@@ -49,6 +49,12 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t sit753-devops-app .'
+            }
+        }
+
         stage('Build Application') {
             steps {
                 bat 'echo Building application...'
