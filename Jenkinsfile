@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
+        sonarQube 'SonarScanner'
     }
 
     environment {
@@ -25,7 +26,14 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                bat 'npx sonar-scanner -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline -Dsonar.organization=wasleyaar -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=%SONAR_TOKEN%'
+                bat '''
+                sonar-scanner.bat ^
+                -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
+                -Dsonar.organization=wasleyaar ^
+                -Dsonar.sources=. ^
+                -Dsonar.host.url=https://sonarcloud.io ^
+                -Dsonar.token=%SONAR_TOKEN%
+                '''
             }
         }
 
