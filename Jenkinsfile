@@ -3,7 +3,6 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
-        sonarQube 'SonarScanner'
     }
 
     environment {
@@ -27,7 +26,7 @@ pipeline {
         stage('Code Quality') {
             steps {
                 bat '''
-                sonar-scanner.bat ^
+                "%SONAR_SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
                 -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
                 -Dsonar.organization=wasleyaar ^
                 -Dsonar.sources=. ^
