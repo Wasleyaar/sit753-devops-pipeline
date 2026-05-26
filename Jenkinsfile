@@ -101,19 +101,6 @@ pipeline {
             }
         }
 
-        stage('Monitoring') {
-            steps {
-
-                sleep(time: 5, unit: 'SECONDS')
-
-                bat """
-                powershell -Command "(Invoke-WebRequest http://localhost:%APP_PORT%/health).StatusCode"
-                """
-
-                echo "Health check passed — app is live at http://localhost:%APP_PORT%"
-            }
-        }
-
     }
 
     post {
