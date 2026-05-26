@@ -38,7 +38,9 @@ pipeline {
         stage('Code Quality') {
             steps {
                 script {
+
                     def scannerHome = tool 'SonarScanner'
+
                     bat """
                     ${scannerHome}\\bin\\sonar-scanner.bat ^
                     -Dsonar.projectKey=Wasleyaar_sit753-devops-pipeline ^
@@ -49,6 +51,7 @@ pipeline {
                     -Dsonar.host.url=https://sonarcloud.io ^
                     -Dsonar.token=%SONAR_TOKEN%
                     """
+
                 }
             }
         }
@@ -58,6 +61,7 @@ pipeline {
                 bat 'npm audit --audit-level=high'
                 bat 'npm audit --json > audit-report.json || echo Audit complete'
             }
+
             post {
                 always {
                     archiveArtifacts artifacts: 'audit-report.json', allowEmptyArchive: true
@@ -67,10 +71,21 @@ pipeline {
 
         stage('Deploy to Staging') {
             steps {
-                bat "%DOCKER% stop %APP_NAME% || echo Container was not running"
-                bat "%DOCKER% rm %APP_NAME%   || echo Container did not exist"
-                bat "%DOCKER% run -d -p %APP_PORT%:3000 --name %APP_NAME% %APP_NAME%:latest"
-                echo "Deployed %APP_NAME%:%VERSION% to staging on port %APP_PORT%"
+
+                bat """
+                %DOCKER% ps -a --format "{{.Names}}" | findstr %APP_NAME%
+                if %ERRORLEVEL%==0 (
+                    %DOCKER% stop %APP_NAME%
+                    %DOCKER% rm %APP_NAME%
+                )
+                """
+
+                bat """
+                %DOCKER% run -d -p %APP_PORT%:3000 --name %APP_NAME% %APP_NAME%:latest
+                """
+
+                echo "Deployment successful"
+
             }
         }
 
@@ -84,9 +99,13 @@ pipeline {
 
         stage('Monitoring') {
             steps {
+
                 sleep(time: 5, unit: 'SECONDS')
+
                 bat "curl -f http://localhost:%APP_PORT%/health"
-                bat "curl -s http://localhost:%APP_PORT%/ "
+
+                bat "curl -s http://localhost:%APP_PORT%/"
+
                 echo "Health check passed — app is live at http://localhost:%APP_PORT%"
             }
         }
@@ -94,12 +113,20 @@ pipeline {
     }
 
     post {
+
         success {
             echo "Pipeline SUCCESS — Version %VERSION% is running."
         }
+
         failure {
             echo "Pipeline FAILED — stopping container if running."
-            bat "%DOCKER% stop %APP_NAME% || echo Nothing to stop"
+
+            bat """
+            %DOCKER% ps -a --format "{{.Names}}" | findstr %APP_NAME%
+            if %ERRORLEVEL%==0 (
+                %DOCKER% stop %APP_NAME%
+            )
+            """
         }
     }
 }
