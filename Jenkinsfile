@@ -24,7 +24,9 @@ pipeline {
 
         stage('Build') {
             steps {
+
                 bat "%DOCKER% build -t %APP_NAME%:%VERSION% -t %APP_NAME%:latest ."
+
                 echo "Built image: %APP_NAME%:%VERSION%"
             }
         }
@@ -37,6 +39,7 @@ pipeline {
 
         stage('Code Quality') {
             steps {
+
                 script {
 
                     def scannerHome = tool 'SonarScanner'
@@ -58,7 +61,9 @@ pipeline {
 
         stage('Security Scan') {
             steps {
+
                 bat 'npm audit --audit-level=high'
+
                 bat 'npm audit --json > audit-report.json || echo Audit complete'
             }
 
@@ -73,11 +78,8 @@ pipeline {
             steps {
 
                 bat """
-                %DOCKER% ps -a --format "{{.Names}}" | findstr %APP_NAME%
-                if %ERRORLEVEL%==0 (
-                    %DOCKER% stop %APP_NAME%
-                    %DOCKER% rm %APP_NAME%
-                )
+                %DOCKER% stop %APP_NAME% || exit 0
+                %DOCKER% rm %APP_NAME% || exit 0
                 """
 
                 bat """
@@ -85,7 +87,6 @@ pipeline {
                 """
 
                 echo "Deployment successful"
-
             }
         }
 
@@ -126,10 +127,7 @@ pipeline {
             echo "Pipeline FAILED — stopping container if running."
 
             bat """
-            %DOCKER% ps -a --format "{{.Names}}" | findstr %APP_NAME%
-            if %ERRORLEVEL%==0 (
-                %DOCKER% stop %APP_NAME%
-            )
+            %DOCKER% stop %APP_NAME% || exit 0
             """
         }
     }
