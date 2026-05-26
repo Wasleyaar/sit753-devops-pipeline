@@ -27,7 +27,7 @@ pipeline {
 
                 bat "%DOCKER% build -t %APP_NAME%:%VERSION% -t %APP_NAME%:latest ."
 
-                echo "Built image: %APP_NAME%:%VERSION%"
+                echo "Built image: ${env.APP_NAME}:${env.VERSION}"
             }
         }
 
@@ -95,9 +95,22 @@ pipeline {
 
                 bat "%DOCKER% tag %APP_NAME%:latest %APP_NAME%:%VERSION%"
 
-                echo "Released version: %VERSION%"
+                echo "Released version: ${env.VERSION}"
 
                 bat "%DOCKER% images %APP_NAME%"
+            }
+        }
+
+        stage('Monitoring') {
+            steps {
+
+                sleep(time: 5, unit: 'SECONDS')
+
+                bat """
+                %DOCKER% ps
+                """
+
+                echo "Container monitoring successful"
             }
         }
 
@@ -106,7 +119,7 @@ pipeline {
     post {
 
         success {
-            echo "Pipeline SUCCESS — Version %VERSION% is running."
+            echo "Pipeline SUCCESS — Version ${env.VERSION} is running."
         }
 
         failure {
