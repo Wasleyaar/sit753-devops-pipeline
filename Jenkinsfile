@@ -91,8 +91,11 @@ pipeline {
 
         stage('Release') {
             steps {
+
                 bat "%DOCKER% tag %APP_NAME%:latest %APP_NAME%:%VERSION%"
+
                 echo "Released version: %VERSION%"
+
                 bat "%DOCKER% images %APP_NAME%"
             }
         }
@@ -119,6 +122,7 @@ pipeline {
         }
 
         failure {
+
             echo "Pipeline FAILED — stopping container if running."
 
             bat """
