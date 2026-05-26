@@ -106,9 +106,9 @@ pipeline {
 
                 sleep(time: 5, unit: 'SECONDS')
 
-                bat "curl -f http://localhost:%APP_PORT%/health"
-
-                bat "curl -s http://localhost:%APP_PORT%/"
+                bat """
+                powershell -Command "(Invoke-WebRequest http://localhost:%APP_PORT%/health).StatusCode"
+                """
 
                 echo "Health check passed — app is live at http://localhost:%APP_PORT%"
             }
